@@ -1,5 +1,3 @@
-import numpy as np
-import torch
 from loguru import logger
 
 SEQUENCE_TYPES = (
@@ -16,15 +14,30 @@ BASE_TYPES = (
     float,
     bool,
     type(None),
-    torch.Tensor,
-    torch.dtype,
-    np.ndarray,
-    np.dtype,
     slice,
     range,
 )
 
-ALLOWED_TYPES = SEQUENCE_TYPES + MAPPING_TYPES + BASE_TYPES
+try:
+    import numpy as np
+
+    NUMPY_TYPES = (
+        np.ndarray,
+        np.dtype,
+    )
+except:
+    NUMPY_TYPES = ()
+try:
+    import torch
+
+    TORCH_TYPES = (
+        torch.Tensor,
+        torch.dtype,
+    )
+except:
+    TORCH_TYPES = ()
+
+ALLOWED_TYPES = SEQUENCE_TYPES + MAPPING_TYPES + BASE_TYPES + NUMPY_TYPES + TORCH_TYPES
 
 
 def recur_to_allowed_types(obj, extra_allowed=()):
