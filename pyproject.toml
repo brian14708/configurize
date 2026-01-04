@@ -5,4 +5,8 @@ description = "Add your description here"
 readme = "README.md"
 dependencies = [
     "loguru",
+    "fire",
 ]
+
+[project.scripts]
+cfshow = "configurize.cli:main"
