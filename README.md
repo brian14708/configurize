@@ -5,6 +5,11 @@ A Python library for hierarchical configuration management with inheritance, cro
 ## Installation
 
 ```bash
+pip install configurize
+```
+
+for development
+```bash
 pip install .
 ```
 
