@@ -14,7 +14,7 @@ from .data_class import DataClass
 from .reference import CfgReferenceError, Ref
 from .utils import filter_traceback_frames, get_func_brief, writable_property
 
-__REPR_FLAG = False  # when enabled, all getattr fail will be skip
+_REPR_FLAG = False  # when enabled, all getattr fail will be skip
 
 
 class Repr(str):
@@ -387,7 +387,7 @@ class Config(DataClass):
             if not name.startswith("_"):
                 return self._get(name)
         except Exception as e:
-            if __REPR_FLAG:
+            if _REPR_FLAG:
                 return Repr("❌ " + e.__repr__())
             else:
                 e.__traceback__ = filter_traceback_frames(
@@ -399,8 +399,8 @@ class Config(DataClass):
     def __repr__(self):
         from pprint import pformat
 
-        global __REPR_FLAG
-        __REPR_FLAG = True
+        global _REPR_FLAG
+        _REPR_FLAG = True
 
         text = [f"{self._class_name}("]
 
@@ -413,7 +413,7 @@ class Config(DataClass):
         text.append(")")
         if self.root() is self and self.__class__.__name__ == "Exp":
             text.append(f"🗺️ TL;DR 🗺️\n{self._brief()}")
-        __REPR_FLAG = False
+        _REPR_FLAG = False
         return "\n".join(text)
 
     def _brief(self) -> str:
@@ -613,6 +613,7 @@ class ConfigDiff(Config):
 
     def _A(self):
         root = Config()
+        root._allow_set_new_attr = True
         root._class_name = "ValueDiff"
         for k, v in self.to_dict(rep=True).items():
             if isinstance(v, ConfigDiff):
@@ -623,6 +624,7 @@ class ConfigDiff(Config):
 
     def _B(self):
         root = Config()
+        root._allow_set_new_attr = True
         root._class_name = "ValueDiff"
         for k, v in self.to_dict(rep=True).items():
             if isinstance(v, ConfigDiff):
@@ -634,6 +636,7 @@ class ConfigDiff(Config):
 
 def build_configdiff_from_flatten(data: dict[str, object]):
     root = ConfigDiff()
+    root._allow_set_new_attr = True
     for k, v in data.items():
         _root = root
         keys = k.split(".")
